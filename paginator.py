@@ -33,7 +33,7 @@ class Paginator:
         self.validating_parameters_types()
         self.validating_parameters_values()
 
-        self.define_pagination()
+        self.aroundd = self.define_pagination()
         
 
     def validating_parameters_types(self):
@@ -85,12 +85,31 @@ class Paginator:
             return
         
         self.message = []
-        self.define_around()
+        self.aroundd = self.define_around()
 
         if not self.boundary_size and (self.current_page != 1 | self.total_pages):
             self.message += ['...']
 
         self.boundaries, left_boundary, right_boundary = self.define_boundaries()
+
+        left_boundary = list(range(1, left_boundary))
+        right_boundary = list(range(right_boundary + 1, self.total_pages + 1))
+
+        self.message += left_boundary
+
+        if 1 + self.boundary_size < self.aroundd[0] and self.message and self.message[-1] != '...':
+            self.message += ['...']
+
+        if not set(self.aroundd).issubset(right_boundary) and not set(self.aroundd).issubset(left_boundary):
+            self.message += set(self.aroundd).difference(left_boundary)
+
+        if self.aroundd[-1] < self.total_pages - self.boundary_size and self.message[-1] != '...': #TODO: PROBABLY THIS NOT GONNA WORK, MUST TEST IF THE SUM IS IN THE AROUND LIST AND GET THE INDEX
+            self.message += ['...']
+
+        if not set(right_boundary).issubset(self.aroundd):
+            self.message += right_boundary
+
+        # self.message = ' '.join(map(str, self.message))
 
     def define_around(self):
         if not self.around_size:
