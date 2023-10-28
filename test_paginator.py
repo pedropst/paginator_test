@@ -105,7 +105,7 @@ def test_around_respect_interval_range():
 def test_first_result_piece_should_be_gap():
     """ When there is no boundary and the current page is in the middle"""
     paginator = Paginator(10, 20, 0, 5)
-    assert paginator.message[0] == '...'
+    assert paginator.pagination_list[0] == '...'
 
 def test_complete_case_when_boundary_equals_zero():
     """ 
@@ -113,11 +113,10 @@ def test_complete_case_when_boundary_equals_zero():
     when boundary == 0
     """
     paginator = Paginator(5, 10, 0, 1)
-    r1, r2, r3 = paginator.define_boundaries()
+    r1, r2 = paginator.define_boundaries()
     assert hasattr(paginator, 'early_return')
     assert r1 == []
-    assert r2 == 0
-    assert r3 == 10 + 1
+    assert r2 == []
 
 def test_complete_case_when_boundary_is_valid():
     """
@@ -125,11 +124,10 @@ def test_complete_case_when_boundary_is_valid():
     when boundary is valid
     """
     paginator = Paginator(5, 8, 2, 1)
-    r1, r2, r3 = paginator.define_boundaries()
+    r1, r2 = paginator.define_boundaries()
     assert not hasattr(paginator, 'early_return')
-    assert r1 == range(3, 7)
-    assert r2 == 3
-    assert r3 == 6
+    assert r1 == [1, 2]
+    assert r2 == [7, 8]
 
 def test_case_when_there_is_boundary_and_gap_until_around():
     """
@@ -137,16 +135,16 @@ def test_case_when_there_is_boundary_and_gap_until_around():
     left boundary and the around range.
     """
     paginator = Paginator(10, 16, 2, 3)
-    assert paginator.message[0] == 1
-    assert paginator.message[1] == 2
+    assert paginator.pagination_list[0] == 1
+    assert paginator.pagination_list[1] == 2
 
 def test_case_when_there_is_gap_until_current_page():
     """
     Testing case where there is a gap until current page
     """
     paginator = Paginator(16, 16, 0, 0)
-    assert paginator.message[0] == '...'
-    assert paginator.message[1] == 16
+    assert paginator.pagination_list[0] == '...'
+    assert paginator.pagination_list[1] == 16
 
 def test_case_where_is_like_gap__current_page__gap():
     """
@@ -154,9 +152,9 @@ def test_case_where_is_like_gap__current_page__gap():
     and the current page is in the middle situation.
     """
     paginator = Paginator(10, 16, 0, 0)
-    assert paginator.message[0] == '...'
-    assert paginator.message[1] == 10
-    assert paginator.message[2] == '...'
+    assert paginator.pagination_list[0] == '...'
+    assert paginator.pagination_list[1] == 10
+    assert paginator.pagination_list[2] == '...'
 
 def test_case_where_is_like_gap__around__current_page__around__gap():
     """
@@ -164,11 +162,11 @@ def test_case_where_is_like_gap__around__current_page__around__gap():
     current page is in the middle situation.
     """
     paginator = Paginator(10, 16, 0, 2)
-    assert paginator.message[0] == '...'
-    assert paginator.message[1] == 8
-    assert paginator.message[3] == 10
-    assert paginator.message[5] == 12
-    assert paginator.message[6] == '...'
+    assert paginator.pagination_list[0] == '...'
+    assert paginator.pagination_list[1] == 8
+    assert paginator.pagination_list[3] == 10
+    assert paginator.pagination_list[5] == 12
+    assert paginator.pagination_list[6] == '...'
 
 def test_case_where_is_like_boundary__around__current_page__around__boundary():
     """
@@ -176,9 +174,9 @@ def test_case_where_is_like_boundary__around__current_page__around__boundary():
     is in the middle situation.
     """
     paginator = Paginator(8, 16, 5, 2)
-    assert paginator.message[0] == 1
-    assert paginator.message[1] == 2
-    assert paginator.message[6] == 7
-    assert paginator.message[7] == 8
-    assert paginator.message[8] == 9
-    assert paginator.message[15] == 16
+    assert paginator.pagination_list[0] == 1
+    assert paginator.pagination_list[1] == 2
+    assert paginator.pagination_list[6] == 7
+    assert paginator.pagination_list[7] == 8
+    assert paginator.pagination_list[8] == 9
+    assert paginator.pagination_list[15] == 16

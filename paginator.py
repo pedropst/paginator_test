@@ -64,29 +64,26 @@ class Paginator:
         if self.checking_for_overflow_cases():  
             return
         
-        self.message = []
+        self.pagination_list = []
         self.aroundd = self.define_around()
-
-        if not self.boundary_size and (self.current_page != 1 | self.total_pages):
-            self.message += ['...']
 
         left_boundary, right_boundary = self.define_boundaries()
 
-        self.message += left_boundary
+        self.pagination_list.extend(left_boundary)
+    
+        if 1 + self.boundary_size < self.aroundd[0]:
+            self.pagination_list.extend(['...'])
 
-        if 1 + self.boundary_size < self.aroundd[0] and self.message and self.message[-1] != '...':
-            self.message += ['...']
+        if not set(self.aroundd).issubset(left_boundary) and not set(self.aroundd).issubset(right_boundary):
+            self.pagination_list.extend(sorted(list(set(self.aroundd).difference(left_boundary))))
 
-        if not set(self.aroundd).issubset(right_boundary) and not set(self.aroundd).issubset(left_boundary):
-            self.message += set(self.aroundd).difference(left_boundary)
+        if self.aroundd[-1] < self.total_pages - self.boundary_size and self.pagination_list[-1] != '...':
+            self.pagination_list.extend(['...'])
 
-        if self.aroundd[-1] < self.total_pages - self.boundary_size and self.message[-1] != '...': #TODO: PROBABLY THIS NOT GONNA WORK, MUST TEST IF THE SUM IS IN THE AROUND LIST AND GET THE INDEX
-            self.message += ['...']
+        if not set(right_boundary).issubset(self.aroundd) or (self.pagination_list and not set(right_boundary).issubset(self.pagination_list)):
+            self.pagination_list.extend(right_boundary)
 
-        if not set(right_boundary).issubset(self.aroundd):
-            self.message += right_boundary
-
-        # self.message = ' '.join(map(str, self.message))
+        self.message = ' '.join(map(str, self.pagination_list))
 
     def define_around(self):
         """
@@ -122,7 +119,7 @@ class Paginator:
 
         if not self.boundary_size:
             self.early_return = True
-            return 0, self.total_pages + 1
+            return [], []
         
         left_boundary = 1 + self.boundary_size
         right_boundary = self.total_pages - self.boundary_size
@@ -141,7 +138,7 @@ class Paginator:
         situations this method will provoke and early return of the 
         define_pagination method for perfomance improvement.
         """
-        
+
         total_boundaries_size = self.boundary_size * 2
         total_around_size = self.around_size * 2
 
