@@ -150,6 +150,8 @@ def test_case_when_there_is_gap_until_current_page():
 
 def test_case_where_is_like_gap__current_page__gap():
     """
+    Testing a common case where there isn't boundary neither around,
+    and the current page is in the middle situation.
     """
     paginator = Paginator(10, 16, 0, 0)
     assert paginator.message[0] == '...'
@@ -158,6 +160,8 @@ def test_case_where_is_like_gap__current_page__gap():
 
 def test_case_where_is_like_gap__around__current_page__around__gap():
     """
+    Testing a common case where there is no boundary, has around and the
+    current page is in the middle situation.
     """
     paginator = Paginator(10, 16, 0, 2)
     assert paginator.message[0] == '...'
@@ -168,6 +172,8 @@ def test_case_where_is_like_gap__around__current_page__around__gap():
 
 def test_case_where_is_like_boundary__around__current_page__around__boundary():
     """
+    Testing a common case where there is a boundary, around and the current page
+    is in the middle situation.
     """
     paginator = Paginator(8, 16, 5, 2)
     assert paginator.message[0] == 1
