@@ -180,3 +180,29 @@ def test_case_where_is_like_boundary__around__current_page__around__boundary():
     assert paginator.pagination_list[7] == 8
     assert paginator.pagination_list[8] == 9
     assert paginator.pagination_list[15] == 16
+
+def test_simplest_paginator_message_value():
+    """ Test the simplest paginator when is only 1"""
+    assert Paginator(1, 1, 0, 0).message == '1'
+
+def test_current_page_in_the_beginning():
+    """ Test the valid case starting with the current page"""
+    assert Paginator(1, 10, 2, 2).message == '1 2 3 ... 9 10'
+    assert Paginator(1, 15, 5, 1).message == '1 2 3 4 5 ... 11 12 13 14 15'
+    assert Paginator(1, 8, 0, 5).message == '1 2 3 4 5 6 ...'
+
+def test_current_page_in_the_middle():
+    """ Test the valid case with the current page in the middle"""
+    assert Paginator(10, 20, 2, 2).message == '1 2 ... 8 9 10 11 12 ... 19 20'
+
+def test_current_page_in_the_end():
+    """ Test the valid case ending with the current page"""
+    assert Paginator(20, 20, 2, 2).message == '1 2 ... 18 19 20'
+
+def test_exercise_example_1():
+    """ Test the test proposal example 01"""
+    assert Paginator(4, 5, 1, 0).message == '1 ... 4 5'
+
+def test_exercise_example_2():
+    """ Test the test proposal example 02"""
+    assert Paginator(4, 10, 2, 2).message == '1 2 3 4 5 6 ... 9 10'

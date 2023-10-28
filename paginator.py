@@ -67,20 +67,45 @@ class Paginator:
         self.pagination_list = []
         self.aroundd = self.define_around()
 
+        if len(self.aroundd) >= self.total_pages:
+            self.early_return = True
+            self.message = ' '.join(map(str, self.aroundd))
+            return True
+
         left_boundary, right_boundary = self.define_boundaries()
+        self.boundaries = left_boundary + right_boundary
 
         self.pagination_list.extend(left_boundary)
     
         if 1 + self.boundary_size < self.aroundd[0]:
             self.pagination_list.extend(['...'])
 
-        if not set(self.aroundd).issubset(left_boundary) and not set(self.aroundd).issubset(right_boundary):
-            self.pagination_list.extend(sorted(list(set(self.aroundd).difference(left_boundary))))
+        if right_boundary and self.aroundd and right_boundary[0] < self.aroundd[0]:
+            self.pagination_list.extend(right_boundary)
+            self.message = ' '.join(map(str, self.pagination_list))
+            return True 
 
+        if left_boundary and self.aroundd and left_boundary[-1] in self.aroundd and self.aroundd[-1] not in right_boundary:
+            index = self.aroundd.index(left_boundary[-1])
+            self.pagination_list.extend(self.aroundd[index+1:])
+
+        if not self.pagination_list or (self.pagination_list and self.pagination_list[-1] == '...') and not set(self.aroundd).issubset(right_boundary):
+            self.pagination_list.extend(self.aroundd)
+
+        if self.aroundd not in self.pagination_list and right_boundary and self.aroundd[0] < right_boundary[0]:
+            self.pagination_list += set(self.aroundd).difference(self.pagination_list)
+
+        if self.pagination_list[-1] == self.total_pages:
+            self.message = ' '.join(map(str, self.pagination_list))
+            return
+        
         if self.aroundd[-1] < self.total_pages - self.boundary_size and self.pagination_list[-1] != '...':
             self.pagination_list.extend(['...'])
 
-        if not set(right_boundary).issubset(self.aroundd) or (self.pagination_list and not set(right_boundary).issubset(self.pagination_list)):
+        if right_boundary and right_boundary[0] in self.pagination_list:
+            index = self.pagination_list.index(right_boundary[0])
+            self.pagination_list.extend(right_boundary[index+1:])
+        else:
             self.pagination_list.extend(right_boundary)
 
         self.message = ' '.join(map(str, self.pagination_list))
@@ -152,12 +177,12 @@ class Paginator:
             self.message = ' '.join(map(str, range(1, self.total_pages + 1)))
             return True
         
-        if total_boundaries_size + total_around_size >= self.total_pages:
-            self.early_return = True
-            self.message = ' '.join(map(str, range(1, self.total_pages + 1)))
-            return True
+        if self.current_page == 1:
+            if max(self.boundary_size, self.around_size) + self.boundary_size >= self.total_pages:
+                self.message = ' '.join(map(str, range(1, self.total_pages + 1)))
+                return True
         
-        if total_boundaries_size + self.around_size > self.total_pages:
-            self.early_return = True
-            self.message = ' '.join(map(str, range(1, self.total_pages + 1)))
-            return True
+        if self.current_page == self.total_pages:
+            if max(self.boundary_size, self.around_size) + self.boundary_size >= self.total_pages:
+                self.message = ' '.join(map(str, range(1, self.total_pages + 1)))
+                return True
